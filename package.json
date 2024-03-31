@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "drizzle-kit push:sqlite && next dev",
+    "build": "drizzle-kit push:sqlite && next build",
+    "start": "drizzle-kit push:sqlite && next start",
     "lint": "next lint"
   },
   "dependencies": {
