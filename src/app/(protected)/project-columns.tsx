@@ -72,7 +72,9 @@ export const columns: ColumnDef<Project>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="pl-4">{row.getValue("offerCount")}</div>,
+    cell: function Cell({ row })  { 
+    return (<div className="pl-4">{row.getValue("offerCount")}</div>)
+    }
   },
   {
     accessorKey: "createdAt",
@@ -87,7 +89,7 @@ export const columns: ColumnDef<Project>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => {
+    cell: function Cell({ row }) {
       const [isClient, setIsClient] = useState(false);
       useEffect(() => {
         setIsClient(true);
@@ -104,7 +106,7 @@ export const columns: ColumnDef<Project>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
+    cell: function Cell({ row }) {
       const project = row.original;
       const [state, setState] = useState<
         Parameters<typeof deleteProjectAction>[0]

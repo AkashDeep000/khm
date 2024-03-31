@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "drizzle-kit push:sqlite && next dev",
-    "build": "drizzle-kit push:sqlite && next build",
-    "start": "drizzle-kit push:sqlite && next start",
-    "lint": "next lint"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "ext start",
+    "lint": "next lint",
+    "db:push": "drizzle-kit push:sqlite",
+    "db:generate": "drizzle-kit generate:sqlite",
+    "db:migrate": "node ./scripts/drizzle-migrate.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
@@ -26,6 +29,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cmdk": "^1.0.0",
+    "dotenv": "^16.4.5",
     "drizzle-orm": "^0.30.6",
     "lucia": "^3.1.1",
     "lucide-react": "^0.363.0",

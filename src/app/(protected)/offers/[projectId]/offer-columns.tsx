@@ -38,7 +38,7 @@ export type Offer = {
   creativeName: string;
   affiliateName: string | null;
   createdAt: string;
-}
+};
 
 export const columns: ColumnDef<Offer>[] = [
   {
@@ -54,8 +54,11 @@ export const columns: ColumnDef<Offer>[] = [
         </Button>
       );
     },
-    cell: ({row}) => (
-      <div className="max-w-44 text-wrap">{row.getValue("offerName")}</div>),
+    cell: function Cell({ row }) {
+      return (
+        <div className="max-w-44 text-wrap">{row.getValue("offerName")}</div>
+      );
+    },
   },
   {
     accessorKey: "offerId",
@@ -88,9 +91,11 @@ export const columns: ColumnDef<Offer>[] = [
         </Button>
       );
     },
-    cell: ({row}) => (
-      <div className="max-w-44 text-wrap">{row.getValue("creativeName")}</div>),
-
+    cell: function Cell({ row }) {
+      return (
+        <div className="max-w-44 text-wrap">{row.getValue("creativeName")}</div>
+      );
+    },
   },
   {
     accessorKey: "createdAt",
@@ -105,7 +110,7 @@ export const columns: ColumnDef<Offer>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => {
+    cell: function Cell({ row }) {
       const [isClient, setIsClient] = useState(false);
       useEffect(() => {
         setIsClient(true);
@@ -122,83 +127,83 @@ export const columns: ColumnDef<Offer>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
-      const offer = row.original;
-      const [state, setState] = useState<
-        Parameters<typeof deleteOfferAction>[0]
-      >({
-        error: false,
-        message: "",
-      });
-      const [pending, setPending] = useState(false);
-      const [deleteOpen, setDeleteOpen] = useState(false);
+    cell: function Cell({ row }) {
+      {
+        const offer = row.original;
+        const [state, setState] = useState<
+          Parameters<typeof deleteOfferAction>[0]
+        >({
+          error: false,
+          message: "",
+        });
+        const [pending, setPending] = useState(false);
+        const [deleteOpen, setDeleteOpen] = useState(false);
 
-      return (
-        <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-         
-            
+        return (
+          <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-              <DropdownMenuSeparator />
-              <DialogTrigger asChild>
-                <DropdownMenuItem className="w-full text-destructive focus:text-destructive hover:text-destructive">
-                  <DeleteIcon className="h-4 w-4" />
-                  <span className="pl-2">Delete</span>
-                </DropdownMenuItem>
-              </DialogTrigger>
-            </DropdownMenuContent>
-            <Toaster richColors />
-          </DropdownMenu>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Are you absolutely sure?</DialogTitle>
-              <DialogDescription>
-                This action cannot be undone. Are you sure you want to
-                permanently delete this offer?
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button
-                onClick={async () => {
-                  console.log(offer);
-                  
-                  setPending(true);
-                  try {
-                    const newState = await deleteOfferAction(
-                      state,
-                      offer.offerId
-                    );
-                    setPending(false);
-                    setDeleteOpen(false);
-                    setState(newState);
-                    if (!newState.error) {
-                      toast.success(newState.message);
-                    } else {
-                      toast.error(newState.message);
+                <DropdownMenuSeparator />
+                <DialogTrigger asChild>
+                  <DropdownMenuItem className="w-full text-destructive focus:text-destructive hover:text-destructive">
+                    <DeleteIcon className="h-4 w-4" />
+                    <span className="pl-2">Delete</span>
+                  </DropdownMenuItem>
+                </DialogTrigger>
+              </DropdownMenuContent>
+              <Toaster richColors />
+            </DropdownMenu>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone. Are you sure you want to
+                  permanently delete this offer?
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button
+                  onClick={async () => {
+                    console.log(offer);
+
+                    setPending(true);
+                    try {
+                      const newState = await deleteOfferAction(
+                        state,
+                        offer.offerId
+                      );
+                      setPending(false);
+                      setDeleteOpen(false);
+                      setState(newState);
+                      if (!newState.error) {
+                        toast.success(newState.message);
+                      } else {
+                        toast.error(newState.message);
+                      }
+                    } catch (error) {
+                      setDeleteOpen(false);
+                      console.log(error);
+                      toast.error("Error occured during offer deletation.");
+                      setPending(false);
                     }
-                  } catch (error) {
-                    setDeleteOpen(false);
-                    console.log(error);
-                    toast.error("Error occured during offer deletation.");
-                    setPending(false);
-                  }
-                }}
-                type="submit"
-              >
-                Confirm
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      );
+                  }}
+                  type="submit"
+                >
+                  Confirm
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        );
+      }
     },
   },
 ];

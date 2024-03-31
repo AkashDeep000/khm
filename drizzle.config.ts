@@ -1,10 +1,14 @@
-import "dotenv/config";
-import type {Config} from "drizzle-kit";
+import type { Config } from 'drizzle-kit'
+import * as dotenv from 'dotenv'
+
+dotenv.config()
+
+const url = process.env.MODE === "production" ? "./database/prod.sqlite" : "./database/dev.sqlite"
+
 export default {
-  schema: "./src/db/schema.ts",
-  out: "./src/drizzle",
-  driver: "better-sqlite",
-  dbCredentials: {
-    url: "database/sqlite.db"
-}
-} satisfies Config;
+  schema: './src/db/schema.ts',
+  out: './src/db/migrations',
+  driver: 'better-sqlite',
+  dbCredentials: { url },
+  verbose: true,
+} satisfies Config
