@@ -11,8 +11,9 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { logoutAction } from "@/actions/auth";
-import { DatabaseUser, User } from "lucia";
-import { CircleUser } from "lucide-react";
+import { CircleUser, UserIcon } from "lucide-react";
+import Link from "next/link";
+import { User } from "lucia";
 
 export function AvatarMenu(user: User) {
   return (
@@ -27,12 +28,21 @@ export function AvatarMenu(user: User) {
         <DropdownMenuLabel>
           <p className="font-medium">Hi, {user.username}</p>
         </DropdownMenuLabel>
+        {user.role === "admin" ? (
+          <>
+            <DropdownMenuSeparator />
+            <Link href="/users">
+              <DropdownMenuItem className="flex gap-2  items-center">
+                <UserIcon size={16} />
+                Manage user
+              </DropdownMenuItem>
+            </Link>
+          </>
+        ) : null}
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <form action={logoutAction}>
-          <Button size="lg">
-            Sign out
-          </Button>
+            <Button size="lg">Sign out</Button>
           </form>
         </DropdownMenuItem>
       </DropdownMenuContent>

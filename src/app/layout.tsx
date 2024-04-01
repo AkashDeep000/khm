@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/context/AuthContext";
 import { validateRequest } from "@/lib/auth";
+import {  Toaster} from "sonner";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -38,6 +39,7 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Toaster richColors/>
         </ThemeProvider>
         </AuthProvider>
       </body>

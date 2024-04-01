@@ -25,3 +25,16 @@ export const signupSchema = z.object({
 		message: "Password is required"
 	}).refine((s) => !s.includes(" "), "No spaces allowed for password"),
   })
+
+  export const createUserSchema = signupSchema.extend({
+	role: z.enum(['user','admin'], {
+		errorMap: (issue, ctx) => ({ message: 'Please select user role' })
+	})
+  })
+
+  export const deleteUserSchema = z
+    .string()
+    .min(1, {
+      message: "username is required",
+    })
+    .refine((s) => !s.includes(" "), "No spaces allowed")

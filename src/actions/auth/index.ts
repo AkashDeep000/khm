@@ -5,14 +5,21 @@ import { cookies } from "next/headers";
 import { lucia, validateRequest } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { SqliteError } from "better-sqlite3";
-import { signupSchema, loginSchema } from "./schema";
+import {
+  signupSchema,
+  loginSchema,
+  createUserSchema,
+  deleteUserSchema,
+} from "./schema";
 import { count, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { SQLiteAsyncDialect } from "drizzle-orm/sqlite-core";
 
 type FormState = {
   message: string;
   feilds?: Record<string, string>;
   issues?: string[];
+  error?: boolean;
 };
 
 export async function signupAction(
@@ -73,13 +80,7 @@ export async function signupAction(
       feilds,
     };
   }
-  if (totalUser.count === 0){
-    return redirect("/");
-  }
-  revalidatePath('/')
-  return {
-    message: "Successfully created the user"
-  }
+  return redirect("/");
 }
 
 export async function loginAction(
@@ -153,4 +154,120 @@ export async function logoutAction(): Promise<FormState> {
     sessionCookie.attributes
   );
   return redirect("/login");
+}
+
+export async function createUserAction(
+  prevState: FormState,
+  data: FormData
+): Promise<FormState> {
+  const { user } = await validateRequest();
+  if (!user) {
+    return redirect("/login");
+  }
+
+  if (user.role !== "admin") {
+    return {
+      error: true,
+      message: "You are not allowed to create user",
+    };
+  }
+
+  const formData = Object.fromEntries(data);
+  const feilds: Record<string, string> = {};
+  for (const key of Object.keys(formData)) {
+    feilds[key] = formData[key].toString();
+  }
+  const parsedData = createUserSchema.safeParse(formData);
+
+  if (parsedData.success === false) {
+    return {
+      message: "",
+      feilds,
+      issues: parsedData.error.issues.map((issue) => issue.message),
+    };
+  }
+
+  try {
+    await db.insert(userTable).values({
+      ...parsedData.data,
+    });
+  } catch (error) {
+    if (
+      error instanceof SqliteError &&
+      error.code === "SQLITE_CONSTRAINT_UNIQUE"
+    ) {
+      return {
+        message: "This username is already used",
+        feilds,
+      };
+    }
+    console.error(error);
+
+    return {
+      message: "Some unknown Error occored",
+      feilds,
+    };
+  }
+  revalidatePath("/users");
+  return {
+    message: "Successfully created the user",
+  };
+}
+
+export async function deleteUserAction(
+  prevState: FormState,
+  username: string
+): Promise<FormState> {
+  console.log(username);
+
+  const { user } = await validateRequest();
+  if (!user) {
+    return redirect("/login");
+  }
+  if (user.role !== "admin") {
+    return {
+      error: true,
+      message: "You are not allowed to delete user",
+    };
+  }
+  const parsedData = deleteUserSchema.safeParse(username);
+
+  if (parsedData.success === false) {
+    return {
+      error: true,
+      message: "",
+      issues: parsedData.error.issues.map((issue) => issue.message),
+    };
+  }
+
+  const [totalUser] = await db
+    .select({ count: count() })
+    .from(userTable)
+    .where(eq(userTable.role, "admin"));
+  const actionUser = await db
+    .select()
+    .from(userTable)
+    .where(eq(userTable.username, parsedData.data));
+
+  if (totalUser.count === 1 && actionUser[0].role === "admin") {
+    return {
+      error: true,
+      message: "You need at least one admin user.",
+    };
+  }
+
+  try {
+    await db.delete(userTable).where(eq(userTable.username, parsedData.data));
+  } catch (error) {
+    console.error(error);
+    return {
+      error: true,
+      message: "Some unknown Error occored",
+    };
+  }
+  revalidatePath("/users");
+  return {
+    error: false,
+    message: "Successfully deleted the user",
+  };
 }

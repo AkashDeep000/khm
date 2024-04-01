@@ -4,12 +4,10 @@ import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import {
   ArrowUpDown,
-  ClipboardCopy,
   DeleteIcon,
-  InspectionPanel,
   MoreHorizontal,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
-import { deleteProjectAction } from "@/actions/project";
+import { deleteUserAction } from "@/actions/auth";
 import {
   Dialog,
   DialogContent,
@@ -30,51 +28,41 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import Link from "next/link";
 
-export type Project = {
-  projectId: string;
-  affiliateId: number;
-  affiliateName: string;
+export type User = {
+  username: string;
+  password: string;
+  role: "user" | "admin";
   createdAt: string;
-  offerCount: number;
 };
 
-export const columns: ColumnDef<Project>[] = [
+export const columns: ColumnDef<User>[] = [
   {
-    accessorKey: "projectId",
-    header: "Project ID",
+    accessorKey: "username",
+    header: "Username",
   },
   {
-    accessorKey: "affiliateName",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Affiliate Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
-  {
-    accessorKey: "offerCount",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Offer Count
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    accessorKey: "password",
+    header: "Password",
     cell: function Cell({ row }) {
-      return <div className="pl-4">{row.getValue("offerCount")}</div>;
+      const password = row.getValue("password") as ReactNode;
+      const [show, setShow] = useState(false);
+
+      return (
+        <div
+          onClick={() => setShow(!show)}
+          className="max-w-36 text-center, text-wrap"
+        >
+          {show
+            ? password
+            : Array(password?.toString().length).fill("*").join("")}
+        </div>
+      );
     },
+  },
+  {
+    accessorKey: "role",
+    header: "Role"
   },
   {
     accessorKey: "createdAt",
@@ -107,9 +95,9 @@ export const columns: ColumnDef<Project>[] = [
   {
     id: "actions",
     cell: function Cell({ row }) {
-      const project = row.original;
+      const user = row.original;
       const [state, setState] = useState<
-        Parameters<typeof deleteProjectAction>[0]
+        Parameters<typeof deleteUserAction>[0]
       >({
         error: false,
         message: "",
@@ -128,23 +116,6 @@ export const columns: ColumnDef<Project>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => {
-                  navigator.clipboard.writeText(project.projectId);
-                  toast.success("Copied the Project ID");
-                }}
-              >
-                <ClipboardCopy className="h-4 w-4" />
-                <span className="pl-2">Copy project ID</span>
-              </DropdownMenuItem>
-              <Link href={`./offers/${project.projectId}`}>
-                {" "}
-                <DropdownMenuItem>
-                  <InspectionPanel className="h-4 w-4" />
-                  <span className="pl-2">View Offers</span>
-                </DropdownMenuItem>
-              </Link>
-
               <DropdownMenuSeparator />
               <DialogTrigger asChild>
                 <DropdownMenuItem className="w-full text-destructive focus:text-destructive hover:text-destructive">
@@ -169,9 +140,9 @@ export const columns: ColumnDef<Project>[] = [
                 onClick={async () => {
                   setPending(true);
                   try {
-                    const newState = await deleteProjectAction(
+                    const newState = await deleteUserAction(
                       state,
-                      project.projectId
+                      user.username
                     );
                     setPending(false);
                     setDeleteOpen(false);
@@ -184,7 +155,7 @@ export const columns: ColumnDef<Project>[] = [
                   } catch (error) {
                     setDeleteOpen(false);
                     console.log(error);
-                    toast.error("Error occured during project deletation.");
+                    toast.error("Error occured during user deletation.");
                     setPending(false);
                   }
                 }}

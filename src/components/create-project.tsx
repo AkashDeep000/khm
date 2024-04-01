@@ -44,7 +44,6 @@ import {
 import { Affiliate } from "@/utils/fetchAffiliates";
 import { ScrollArea } from "./ui/scroll-area";
 import { toast } from "sonner";
-import { Toaster } from "./ui/sonner";
 
 export function CreateProjectForm({ affiliates }: { affiliates: Affiliate[] }) {
   const [openP, setOpenP] = useState(false);
@@ -244,7 +243,6 @@ export function CreateProjectForm({ affiliates }: { affiliates: Affiliate[] }) {
               </DialogFooter>
             </form>
           </Form>
-          <Toaster richColors />
         </DialogContent>
       </Dialog>
     </>

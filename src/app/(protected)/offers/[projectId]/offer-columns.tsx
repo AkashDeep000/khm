@@ -4,9 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import {
   ArrowUpDown,
-  ClipboardCopy,
   DeleteIcon,
-  InspectionPanel,
   MoreHorizontal,
 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -29,7 +27,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import Link from "next/link";
 import { deleteOfferAction } from "@/actions/offer";
 
 export type Offer = {
@@ -171,6 +168,7 @@ export const columns: ColumnDef<Offer>[] = [
               </DialogHeader>
               <DialogFooter>
                 <Button
+                  disabled={pending}
                   onClick={async () => {
                     console.log(offer);
 

@@ -107,5 +107,3 @@ export async function deleteProjectAction(
     message: "Successfully deleted the project",
   };
 }
-
-const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));

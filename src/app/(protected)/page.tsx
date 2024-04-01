@@ -21,7 +21,6 @@ export default async function Home() {
     .groupBy(projectTable.projectId)
     .orderBy(desc(projectTable.createdAt));
 
-
   const affiliates = await fetchAffiliates();
   const offers = await fetchOffers();
   
@@ -33,7 +32,6 @@ export default async function Home() {
           <h3 className="text-xl font-semibold">Projects</h3>
           <CreateProjectForm affiliates={affiliates} />
         </div>
-
         <ProjectTable columns={columns} data={projects} />
       </div>
     </div>
