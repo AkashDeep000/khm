@@ -1,11 +1,11 @@
+# The litestream config
+
 dbs:
-  ${{ if eq( variables['MODE'], 'production' ) }}: 
-    - path: ./database/prod.sqlite
-  ${{ else }}:
-    - path: ./database/dev.sqlite
+  - path: database/prod.db
     replicas:
       - type: s3
-        endpoint: ${REPLICA_URL}
-        bucket: ${REPLICA_BUCKET_NAME}
-        access-key-id: ${CLOUDFLARE_R2_ACCESS_KEY_ID}
-        secret-access-key: ${CLOUDFLARE_R2_SECRET_ACCESS_KEY}
+        endpoint: ${S3_ENDPOINT}
+        path: ${S3_REPLICA_PATH}
+        bucket: ${S3_BUCKET}
+        access-key-id: ${S3_ACCESS_KEY_ID}
+        secret-access-key: ${S3_SECRET_ACCESS_KEY}

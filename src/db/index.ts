@@ -3,9 +3,7 @@ import sqlite from 'better-sqlite3'
 import * as schema from "./schema"
 import { DrizzleSQLiteAdapter } from '@lucia-auth/adapter-drizzle';
 
-const url = process.env.MODE === "production" ? "./database/prod.sqlite" : "./database/dev.sqlite"
-
-console.log(`ahoy!! using ${url}`)
+const url = process.env.MODE === "production" ? "./database/prod.db" : "./database/dev.db"
 
 const client = sqlite(url)
 // use sqlite pragma. recommended from https://cj.rs/blog/sqlite-pragma-cheatsheet-for-performance-and-consistency/

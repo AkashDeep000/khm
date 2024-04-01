@@ -7,9 +7,10 @@ import * as dotenv from 'dotenv'
 
 dotenv.config()
 
-const url = process.env.MODE === "production" ? "./database/prod.sqlite" : "./database/dev.sqlite"
+const url = process.env.MODE === "production" ? "./database/prod.db" : "./database/dev.db"
 
 console.log({ url })
+
 const client = sqlite(url, { verbose: console.log })
 // use sqlite pragma. recommended from https://cj.rs/blog/sqlite-pragma-cheatsheet-for-performance-and-consistency/
 client.pragma('journal_mode=WAL') // see https://github.com/WiseLibs/better-sqlite3/blob/master/docs/performance.md

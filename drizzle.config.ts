@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv'
 
 dotenv.config()
 
-const url = process.env.MODE === "production" ? "./database/prod.sqlite" : "./database/dev.sqlite"
+const url = process.env.MODE === "production" ? "./database/prod.db" : "./database/dev.db"
 
 export default {
   schema: './src/db/schema.ts',

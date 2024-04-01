@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "ext start",
+    "build": "next experimental-compile",
+    "start": "next start",
     "lint": "next lint",
     "db:push": "drizzle-kit push:sqlite",
     "db:generate": "drizzle-kit generate:sqlite",

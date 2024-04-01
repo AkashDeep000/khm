@@ -1,6 +1,3 @@
-import { lucia, validateRequest } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { SiteHeader } from "@/components/site-header";
 import { CreateProjectForm } from "@/components/create-project";
 import { fetchAffiliates } from "@/utils/fetchAffiliates";
 import db, { offerTable, projectTable, userTable } from "@/db";
