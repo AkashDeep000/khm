@@ -74,13 +74,12 @@ export function ProjectOfferView({
       {projects.map((project) => (
         <AccordionItem key={project.projectId} value={project.projectId}>
           <AccordionTrigger className="text-lg font-semibold hover:no-underline">
-            <div>
-              {project.projectId}
+            <div className="flex items-center gap-2">
               {isClient && (
                 <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0 ml-2">
+                      <Button variant="ghost" className="h-8 w-8 p-0">
                         <span className="sr-only">Open project option</span>
                         {pending ? (
                           <Loader2 className="animate-spin h-5 w-5" />
@@ -154,6 +153,8 @@ export function ProjectOfferView({
                   </DialogContent>
                 </Dialog>
               )}
+               {project.projectId}
+               <span className="text-sm font-normal">({project.affiliateName})</span>
             </div>
           </AccordionTrigger>
           <AccordionContent className="border rounded-lg pb-0 mb-4">
