@@ -24,7 +24,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useRef, useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Command,
@@ -41,12 +41,11 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "./ui/scroll-area";
 import { toast } from "sonner";
-import { Toaster } from "./ui/sonner";
 import { Offer } from "@/utils/fetchOffers";
-import { createOfferSchema } from "@/actions/offer/schema";
+import { createOffersSchema } from "@/actions/offer/schema";
 import { Creative } from "@/utils/fetchCreatives";
 import { getCreativesAction } from "@/actions/creative";
-import { createOfferAction } from "@/actions/offer";
+import { createOffersAction } from "@/actions/offer";
 import {
   Card,
   CardContent,
@@ -55,6 +54,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox"
 
 export function CreateOfferForm({
   projects,
@@ -68,10 +68,8 @@ export function CreateOfferForm({
   const [creatives, setCreatives] = useState<Creative[]>([]);
   const [openP1, setOpenP1] = useState(false);
   const [openP2, setOpenP2] = useState(false);
-  const [openP3, setOpenP3] = useState(false);
-  const [openD, setOpenD] = useState(false);
   const [formState, setFormState] = useState<
-    Parameters<typeof createOfferAction>[0]
+    Parameters<typeof createOffersAction>[0]
   >({
     error: false,
     message: "",
@@ -80,10 +78,10 @@ export function CreateOfferForm({
   const [pending, setPending] = useState(false);
   const [creativeFetchPending, setCreativeFetchPending] = useState(false);
 
-  const form = useForm<z.infer<typeof createOfferSchema>>({
-    resolver: zodResolver(createOfferSchema),
+  const form = useForm<z.infer<typeof createOffersSchema>>({
+    resolver: zodResolver(createOffersSchema),
     defaultValues: {
-      projectId: "",
+      projectIds: [],
       offerId: undefined,
       offerName: "",
       creativeId: undefined,
@@ -91,21 +89,15 @@ export function CreateOfferForm({
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof createOfferSchema>) => {
-    setPending(true);
-    const formData = new FormData();
-    formData.append("projectId", values.projectId);
-    formData.append("offerId", values.offerId.toString());
-    formData.append("offerName", values.offerName);
-    formData.append("creativeId", values.creativeId.toString());
-    formData.append("creativeName", values.creativeName);
+  const onSubmit = async (values: z.infer<typeof createOffersSchema>) => {
+    setPending(true)
     try {
-      const newState = await createOfferAction(formState, formData);
+      const newState = await createOffersAction(formState, values);
       setPending(false);
       setFormState(newState);
+      setCreatives([])
       if (!newState.error) {
         toast.success(newState.message);
-        setOpenD(false);
         form.reset();
       } else {
         toast.error(newState.message);
@@ -132,9 +124,9 @@ export function CreateOfferForm({
         >
           <Card className="w-full">
             <CardHeader>
-              <CardTitle className="text-xl">Create Offer</CardTitle>
+              <CardTitle className="text-xl">Add Offers</CardTitle>
               <CardDescription>
-                Create Offer by selecting the feids bellow
+                Add offers by selecting the feids bellow
               </CardDescription>
               {formState?.message !== "" && !formState?.issues && (
                 <div
@@ -148,7 +140,7 @@ export function CreateOfferForm({
               {formState?.issues && (
                 <div className="pt-2 text-red-500">
                   <ul className="grid gap-1">
-                    {formState.issues.map((issue) => (
+                    {formState.issues?.map((issue) => (
                       <li className="list-disc ml-4" key={issue}>
                         {issue}
                       </li>
@@ -160,95 +152,13 @@ export function CreateOfferForm({
             <CardContent className="grid gap-4">
               <FormField
                 control={form.control}
-                name="projectId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Select Project</FormLabel>
-                    <Popover
-                      open={openP1}
-                      onOpenChange={setOpenP1}
-                      modal={true}
-                    >
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn(
-                              "w-full justify-between",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value
-                              ? projects.find(
-                                  (project) => project.projectId === field.value
-                                )?.projectId
-                              : "Select Project"}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-0">
-                        <Command>
-                          <CommandInput placeholder="Search creative..." />
-                          <CommandEmpty>
-                            No Project found.{" "}
-                            {projects.length === 0 ? (
-                              <>
-                                <br /> First create a project.
-                              </>
-                            ) : null}{" "}
-                          </CommandEmpty>
-                          <CommandList>
-                            <ScrollArea className="h-48">
-                              <CommandGroup>
-                                {projects.map((project, i) => (
-                                  <CommandItem
-                                    value={project.projectId}
-                                    key={i.toString() + project.projectId}
-                                    onSelect={() => {
-                                      setFormState({
-                                        error: false,
-                                        message: "",
-                                      });
-                                      form.clearErrors("projectId");
-                                      form.setValue(
-                                        "projectId",
-                                        project.projectId
-                                      );
-                                      setOpenP1(false);
-                                    }}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 h-4 w-4",
-                                        project.projectId === field.value
-                                          ? "opacity-100"
-                                          : "opacity-0"
-                                      )}
-                                    />
-                                    {project.projectId}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </ScrollArea>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
                 name="offerId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Select Affilate</FormLabel>
+                    <FormLabel>Select Offer</FormLabel>
                     <Popover
-                      open={openP2}
-                      onOpenChange={setOpenP2}
+                      open={openP1}
+                      onOpenChange={setOpenP1}
                       modal={true}
                     >
                       <PopoverTrigger asChild>
@@ -297,7 +207,7 @@ export function CreateOfferForm({
                                       );
                                       form.resetField("creativeId");
                                       form.resetField("creativeName");
-                                      setOpenP2(false);
+                                      setOpenP1(false);
                                       try {
                                         setCreativeFetchPending(true);
                                         const creativesRes =
@@ -349,10 +259,10 @@ export function CreateOfferForm({
                 name="creativeId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Select Creative</FormLabel>
+                    <FormLabel className="flex gap-2 items-center">Select Creative {creativeFetchPending && <Loader2 className="w-4 h-4 animate-spin"/>}</FormLabel>
                     <Popover
-                      open={openP3}
-                      onOpenChange={setOpenP3}
+                      open={openP2}
+                      onOpenChange={setOpenP2}
                       modal={true}
                     >
                       <PopoverTrigger asChild>
@@ -403,7 +313,7 @@ export function CreateOfferForm({
                                         "creativeName",
                                         creative.creativeName
                                       );
-                                      setOpenP3(false);
+                                      setOpenP2(false);
                                     }}
                                   >
                                     <Check
@@ -427,10 +337,46 @@ export function CreateOfferForm({
                   </FormItem>
                 )}
               />
+              <div className="text-sm font-semibold text-primary/90">Add to Projects</div>
+              {projects.map((project) => (
+                <FormField
+                  key={project.projectId}
+                  control={form.control}
+                  name="projectIds"
+                  render={({ field }) => {
+                    return (
+                      <FormItem
+                        key={project.projectId}
+                        className="flex flex-row items-start space-x-3 space-y-0"
+                      >
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value?.includes(project.projectId)}
+                            onCheckedChange={(checked) => {
+                              return checked
+                                ? field.onChange([...field.value, project.projectId])
+                                : field.onChange(
+                                    field.value?.filter(
+                                      (value) => value !== project.projectId
+                                    )
+                                  )
+                            }}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          {project.projectId}
+                        </FormLabel>
+                      </FormItem>
+                    )
+                  }}
+                />
+              ))}
+              <FormMessage />
+            
             </CardContent>
             <CardFooter>
               <Button disabled={pending} className="w-full" type="submit">
-                Create Offer
+              <p className="flex gap-2 items-center">{pending ? <>Adding Offer/Creative... <Loader2 className="w-4 h-4 animate-spin"/></> : "Add Offer/Creative"}</p>
               </Button>
             </CardFooter>
           </Card>

@@ -2,11 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  DeleteIcon,
-  MoreHorizontal,
-} from "lucide-react";
+import { ArrowUpDown, Trash, MoreHorizontal, Loader2 } from "lucide-react";
 import { useState, useEffect, ReactNode } from "react";
 import {
   DropdownMenu,
@@ -62,7 +58,7 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "role",
-    header: "Role"
+    header: "Role",
   },
   {
     accessorKey: "createdAt",
@@ -110,8 +106,12 @@ export const columns: ColumnDef<User>[] = [
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">Open user actions</span>
+                {pending ? (
+                  <Loader2 className="animate-spin h-5 w-5" />
+                ) : (
+                  <MoreHorizontal className="h-4 w-4" />
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -119,8 +119,8 @@ export const columns: ColumnDef<User>[] = [
               <DropdownMenuSeparator />
               <DialogTrigger asChild>
                 <DropdownMenuItem className="w-full text-destructive focus:text-destructive hover:text-destructive">
-                  <DeleteIcon className="h-4 w-4" />
-                  <span className="pl-2">Delete</span>
+                  <Trash className="h-4 w-4" />
+                  <span className="pl-2">Remove</span>
                 </DropdownMenuItem>
               </DialogTrigger>
             </DropdownMenuContent>

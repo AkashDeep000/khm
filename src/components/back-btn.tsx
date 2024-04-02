@@ -13,6 +13,8 @@ export function BackBtn() {
       onClick={() => {
         if (pathname.startsWith("/offers")) {
           router.replace("/");
+        } else if (pathname.startsWith("/users")) {
+          router.replace("/");
         } else {
           router.back();
         }

@@ -25,12 +25,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useRef, useState } from "react";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export function LoginForm() {
-  const [state, formAction] = useFormState(loginAction, {
+  const [state, setState] = useState<Parameters<typeof loginAction>[0]>({
+    error: false,
     message: "",
   });
+  const [pending, setPending] = useState(false);
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -40,11 +44,24 @@ export function LoginForm() {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof loginSchema>) => {
+  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     const formData = new FormData();
     formData.append("username", values.username);
     formData.append("password", values.password);
-    formAction(formData);
+    setPending(true)
+    try {
+      const newState = await loginAction(state, formData);
+      setPending(false);
+      setState(newState);
+      if (newState?.error) {
+        toast.error(newState.message);
+      }
+      toast.success('Login successfull')
+    } catch (error) {
+      console.log(error);
+      toast.error("Error occured during login.");
+      setPending(false);
+    }
   };
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -52,9 +69,14 @@ export function LoginForm() {
   return (
     <Form {...form}>
       <form
+        onChange={() =>
+          setState({
+            error: false,
+            message: "",
+          })
+        }
         method="post"
         ref={formRef}
-        //action={formAction}
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-8"
       >
@@ -125,8 +147,8 @@ export function LoginForm() {
             />
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">
-              Login
+            <Button disabled={pending} type="submit" className="w-full">
+            <p className="flex gap-2 items-center">{pending ? <>Logging in... <Loader2 className="w-4 h-4 animate-spin"/></> : "Login"}</p>
             </Button>
           </CardFooter>
         </Card>

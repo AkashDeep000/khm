@@ -59,7 +59,7 @@ export async function createProjectAction(
     console.error(error);
     return {
       error: true,
-      message: "Some unknown Error occored",
+      message: "Error during database operation",
       feilds,
     };
   }
@@ -98,7 +98,7 @@ export async function deleteProjectAction(
     console.error(error);
     return {
       error: true,
-      message: "Some unknown Error occored",
+      message: "Error during database operation",
     };
   }
   revalidatePath("/");

@@ -3,67 +3,63 @@
 import db, { offerTable } from "@/db";
 import { validateRequest } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { createOfferSchema, deleteOfferSchema } from "./schema";
+import { createOffersSchema, deleteOfferSchema } from "./schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { off } from "process";
+import { z } from "zod";
 
 type FormState = {
   error: boolean;
   message: string;
-  feilds?: Record<string, string | number>;
   issues?: string[];
 };
 
-export async function createOfferAction(
+export async function createOffersAction(
   prevState: FormState,
-  data: FormData
+  formData: z.infer<typeof createOffersSchema>
 ): Promise<FormState> {
   const { session } = await validateRequest();
   if (!session) {
     return redirect("/login");
   }
 
-  const formData = Object.fromEntries(data);
-  const feilds: Record<string, string> = {};
-  for (const key of Object.keys(formData)) {
-    feilds[key] = formData[key].toString();
-  }
-
-  const parsedData = createOfferSchema.safeParse(formData);
+  const parsedData = createOffersSchema.safeParse(formData);
 
   if (parsedData.success === false) {
     return {
       error: true,
-      message: "",
-      feilds,
+      message: "Form validation error",
       issues: parsedData.error.issues.map((issue) => issue.message),
     };
   }
 
   try {
-    await db.insert(offerTable).values({
-      ...parsedData.data,
-    });
+    await db.insert(offerTable).values(
+     parsedData.data.projectIds.map(projectId => ({
+      projectId,
+      creativeId: parsedData.data.creativeId,
+      creativeName: parsedData.data.creativeName,
+      offerId: parsedData.data.offerId,
+      offerName: parsedData.data.offerName,
+     }))
+    );
   } catch (error) {
     console.error(error);
     return {
       error: true,
-      message: "Some unknown Error occored",
-      feilds,
+      message: "Error during database operation",
     };
   }
   revalidatePath("/");
   return {
     error: false,
     message: "Successfully created the offer",
-    feilds,
   };
 }
 
 export async function deleteOfferAction(
   prevState: FormState,
-  offerId: number
+  offerId: string
 ): Promise<FormState> {
   const { user } = await validateRequest();
   if (!user) {
@@ -81,12 +77,12 @@ export async function deleteOfferAction(
   }
 
   try {
-    await db.delete(offerTable).where(eq(offerTable.offerId, parsedData.data));
+    await db.delete(offerTable).where(eq(offerTable.id, parsedData.data));
   } catch (error) {
     console.error(error);
     return {
       error: true,
-      message: "Some unknown Error occored",
+      message: "Error during database operation",
     };
   }
   revalidatePath("/");

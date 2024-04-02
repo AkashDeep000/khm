@@ -26,7 +26,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useRef, useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Command,
@@ -152,7 +152,7 @@ export function CreateProjectForm({ affiliates }: { affiliates: Affiliate[] }) {
                   <FormItem>
                     <FormLabel>Project ID</FormLabel>
                     <FormDescription>
-                      It will be used to fetch JSON for Iterable.
+                    This is used as the <span className="bg-secondary px-1.5 py-0.5 rounded italic">project=</span> value when configuring the Iterable Data Feed. Use all lowercase and no spaces.
                     </FormDescription>
                     <FormControl>
                       <Input placeholder="projectId" {...field} />
@@ -238,7 +238,7 @@ export function CreateProjectForm({ affiliates }: { affiliates: Affiliate[] }) {
               />
               <DialogFooter>
                 <Button disabled={pending} className="w-full" type="submit">
-                  Create Project
+                <p className="flex gap-2 items-center">{pending ? <>Creating Project... <Loader2 className="w-4 h-4 animate-spin"/></> : "Create Project"}</p>
                 </Button>
               </DialogFooter>
             </form>

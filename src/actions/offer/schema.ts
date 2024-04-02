@@ -1,12 +1,16 @@
 import { z } from "zod";
 
-export const createOfferSchema = z.object({
-  projectId: z
-    .string()
-    .min(1, {
-      message: "projectId is required",
-    })
-    .refine((s) => !s.includes(" "), "No spaces allowed"),
+export const createOffersSchema = z.object({
+  projectIds: z
+    .array(
+      z
+        .string()
+        .toLowerCase()
+        .refine((s) => !s.includes(" "), "No spaces allowed")
+    )
+    .refine((value) => value.some((item) => item), {
+      message: "You have to select at least one item.",
+    }),
 
   offerId: z.coerce
     .number({
@@ -45,11 +49,9 @@ export const createOfferSchema = z.object({
     }),
 });
 
-export const deleteOfferSchema = z.coerce
-  .number({
-    required_error: "offerId is required",
+export const deleteOfferSchema = z
+  .string()
+  .min(1, {
+    message: "Offer id is required",
   })
-  .int("offerId must be a possitive intiger")
-  .positive({
-    message: "offerId must be a possitive intiger",
-  });
+  .refine((s) => !s.includes(" "), "No spaces allowed");

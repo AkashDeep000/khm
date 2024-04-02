@@ -5,7 +5,7 @@ export const createProjectSchema = z.object({
     .string()
     .min(1, {
       message: "projectId is required",
-    })
+    }).toLowerCase()
     .refine((s) => !s.includes(" "), "No spaces allowed"),
 
   affiliateId: z.coerce

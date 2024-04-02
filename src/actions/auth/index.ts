@@ -76,7 +76,7 @@ export async function signupAction(
     console.error(error);
 
     return {
-      message: "Some unknown Error occored",
+      message: "Error during database operation",
       feilds,
     };
   }
@@ -96,7 +96,8 @@ export async function loginAction(
 
   if (parsedData.success === false) {
     return {
-      message: "",
+      error: true,
+      message: "Form validation error",
       feilds,
       issues: parsedData.error.issues.map((issue) => issue.message),
     };
@@ -109,12 +110,14 @@ export async function loginAction(
       .where(eq(userTable.username, parsedData.data.username));
     if (!user) {
       return {
+        error: true,
         message: "Username does not exist",
         feilds,
       };
     }
     if (user.password !== parsedData.data.password) {
       return {
+        error: true,
         message:
           "Password isn't correct. Try again or Contact admin to reset the password",
         feilds,
@@ -130,7 +133,8 @@ export async function loginAction(
   } catch (e) {
     console.log(e);
     return {
-      message: "Some unknown Error occored",
+      error: true,
+      message: "Error during database operation",
       feilds,
     };
   }
@@ -141,6 +145,7 @@ export async function logoutAction(): Promise<FormState> {
   const { session } = await validateRequest();
   if (!session) {
     return {
+      error: true,
       message: "Unauthorized",
     };
   }
@@ -181,7 +186,8 @@ export async function createUserAction(
 
   if (parsedData.success === false) {
     return {
-      message: "",
+      error: true,
+      message: "Form validation error",
       feilds,
       issues: parsedData.error.issues.map((issue) => issue.message),
     };
@@ -204,12 +210,14 @@ export async function createUserAction(
     console.error(error);
 
     return {
-      message: "Some unknown Error occored",
+      error: true,
+      message: "Error during database operation",
       feilds,
     };
   }
   revalidatePath("/users");
   return {
+    error: false,
     message: "Successfully created the user",
   };
 }
@@ -262,7 +270,7 @@ export async function deleteUserAction(
     console.error(error);
     return {
       error: true,
-      message: "Some unknown Error occored",
+      message: "Error during database operation",
     };
   }
   revalidatePath("/users");

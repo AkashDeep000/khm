@@ -54,3 +54,5 @@ export const offerRelations = relations(offerTable, ({ one }) => ({
     references: [projectTable.projectId],
   }),
 }));
+
+export type DatabaseOffer = typeof offerTable.$inferSelect;
