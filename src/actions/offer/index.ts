@@ -1,5 +1,6 @@
 "use server";
 
+import { SqliteError } from "better-sqlite3";
 import db, { offerTable } from "@/db";
 import { validateRequest } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -44,6 +45,15 @@ export async function createOffersAction(
      }))
     );
   } catch (error) {
+    if (
+      error instanceof SqliteError &&
+      error.code === "SQLITE_CONSTRAINT_UNIQUE"
+    ) {
+      return {
+        error: true,
+        message: "An offer using same configaration is already exist",
+      };
+    }
     console.error(error);
     return {
       error: true,

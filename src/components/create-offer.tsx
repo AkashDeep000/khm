@@ -95,10 +95,10 @@ export function CreateOfferForm({
       const newState = await createOffersAction(formState, values);
       setPending(false);
       setFormState(newState);
-      setCreatives([])
       if (!newState.error) {
         toast.success(newState.message);
         form.reset();
+        setCreatives([])
       } else {
         toast.error(newState.message);
       }
@@ -338,6 +338,7 @@ export function CreateOfferForm({
                 )}
               />
               <div className="text-sm font-semibold text-primary/90">Add to Projects</div>
+              {projects.length === 0 ? <div className="text-destructive">Currently there is no project. First create a project.</div> : null}
               {projects.map((project) => (
                 <FormField
                   key={project.projectId}

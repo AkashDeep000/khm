@@ -8,6 +8,13 @@
       "when": 1711898510543,
       "tag": "0000_yellow_tana_nile",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1712023242567,
+      "tag": "0001_dizzy_loa",
+      "breakpoints": true
     }
   ]
 }

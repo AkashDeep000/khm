@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `offer_project_id_offer_id_creative_id_unique` ON `offer` (`project_id`,`offer_id`,`creative_id`);
