@@ -29,8 +29,6 @@ export async function GET(
     .limit(1)
     .leftJoin(projectTable, eq(offerTable.projectId, projectTable.projectId));
 
-  console.log(randomOffer);
-
   if (!randomOffer) {
     return Response.json(
       { message: "There is no offer/creative available for this project" },

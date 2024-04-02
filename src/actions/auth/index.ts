@@ -203,6 +203,7 @@ export async function createUserAction(
       error.code === "SQLITE_CONSTRAINT_UNIQUE"
     ) {
       return {
+        error: true,
         message: "This username is already used",
         feilds,
       };
@@ -226,7 +227,6 @@ export async function deleteUserAction(
   prevState: FormState,
   username: string
 ): Promise<FormState> {
-  console.log(username);
 
   const { user } = await validateRequest();
   if (!user) {
