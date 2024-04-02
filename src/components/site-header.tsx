@@ -17,10 +17,21 @@ export function SiteHeader() {
       <div className="px-4 container grid grid-cols-[auto_1fr] h-16 max-w-screen-2xl items-center ">
         <div className="flex justify-end items-center center gap-3">
           <BackBtn />
+          
+            <Link href="/">
+            <Image
+              className="h-10 w-auto dark:hidden"
+              src="/logo.png"
+              alt="karmaholic media logo"
+              height={250}
+              width={1000}
+              style={{ objectFit: "cover" }}
+            />
+          </Link>
           <Link href="/">
             <Image
-              className="h-10 w-auto dark:invert"
-              src="/logo.png"
+              className="h-10 w-auto hidden dark:block"
+              src="/logo-light.png"
               alt="karmaholic media logo"
               height={250}
               width={1000}

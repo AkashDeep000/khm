@@ -22,7 +22,7 @@ export default async function ProtectedLayout({
   return (
     <>
       <SiteHeader />
-      <div className="p-2 md:p-4 md:mx-auto md:max-w-2xl lg:max-w-7xl">
+      <div className="p-2 sm:p-4 container max-w-screen-2xl">
         {children}
       </div>
     </>
