@@ -172,9 +172,11 @@ export function CreateOfferForm({
                             )}
                           >
                             {field.value
-                              ? offers.find(
+                              ? `${offers.find(
                                   (offer) => offer.offerId === field.value
-                                )?.offerName
+                                )?.offerName} (${offers.find(
+                                  (offer) => offer.offerId === field.value
+                                )?.offerId})`
                               : "Select offer"}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
@@ -241,7 +243,7 @@ export function CreateOfferForm({
                                           : "opacity-0"
                                       )}
                                     />
-                                    {offer.offerName}
+                                    {`${offer.offerName} (${offer.offerId})`}
                                   </CommandItem>
                                 ))}
                               </CommandGroup>
@@ -276,10 +278,13 @@ export function CreateOfferForm({
                             )}
                           >
                             {field.value
-                              ? creatives.find(
+                              ? `${creatives.find(
                                   (creative) =>
                                     creative.creativeId === field.value
-                                )?.creativeName
+                                )?.creativeName} (${creatives.find(
+                                  (creative) =>
+                                    creative.creativeId === field.value
+                                )?.creativeId})`
                               : "Select creative"}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
@@ -324,7 +329,7 @@ export function CreateOfferForm({
                                           : "opacity-0"
                                       )}
                                     />
-                                    {creative.creativeName}
+                                    {`${creative.creativeName} (${creative.creativeId})`}
                                   </CommandItem>
                                 ))}
                               </CommandGroup>
