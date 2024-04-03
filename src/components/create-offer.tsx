@@ -191,7 +191,7 @@ export function CreateOfferForm({
                               <CommandGroup>
                                 {offers.map((offer, i) => (
                                   <CommandItem
-                                    value={offer.offerName}
+                                    value={`${offer.offerName} (${offer.offerId})`}
                                     key={
                                       i.toString() + offer.offerId.toString()
                                     }
@@ -299,7 +299,7 @@ export function CreateOfferForm({
                               <CommandGroup>
                                 {creatives.map((creative, i) => (
                                   <CommandItem
-                                    value={creative.creativeName}
+                                    value={`${creative.creativeName} (${creative.creativeId})`}
                                     key={
                                       i.toString() +
                                       creative.creativeId.toString()
